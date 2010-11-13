@@ -1,15 +1,41 @@
 (function($) {
   var afterRenderQueue = [];
 
+  Fr._views = {}; // define the views container
+  var loading = {};
+  var waiting = {};
+  Fr.views = function(key,callback) { // define the views container
+    if (Fr._views[key]) {
+      callback( Fr._views[key] );
+    } else if (loading[key]) {
+      waiting[key].push(callback);
+    } else {
+      waiting[key] = [];
+      loading[key] = true;
+      // see if we can load it
+      $.get(AppRoot+'/views/'+key+'.html.ejs',function(raw_view_html) {
+        $('<div>'+raw_view_html+'</div>').framework('_loadView_',key);
+        callback( Fr._views[key] );
+        $.each(waiting[key],function(i,cb) {
+          cb( Fr._views[key] );
+        });
+      },'html');
+    }
+  };
+
   $.extend(Fr.plugin.methods,{
 
     _loadViews_: function() {
-      $(this).detach().children().each(function() {
-        Fr.views[this.id] = $(this).detach();
-        Fr.views[this.id].data('render', function(view_data) {
-          return new EJS({text: this.html().replace(/&lt;%/g,'<%').replace(/%&gt;/g,'%>') }).render(view_data);
-        });
+      this.detach().children().each(function() {
+        $(this).framework('_loadView_',this.id);
       });
+    },
+
+    _loadView_: function(key) {
+      Fr._views[key] = this.detach();
+      Fr._views[key].data('render', function(view_data) {
+        return new EJS({text: this.html().replace(/&lt;%/g,'<%').replace(/%&gt;/g,'%>') }).render(view_data);
+      })
     },
 
     /*
@@ -17,22 +43,24 @@
      *  for example:  Fr.view['some/view'].renderAsLayout()
      */
     renderAsLayout: function() {
-      Fr.plugin.methods.renderTo.apply(this,['body']);
+      this.framework('renderTo','body');
     },
 
     renderTo: function(element,view_data) {
       if (!(element instanceof jQuery)) {
         element = $(element);
       }
-      var $html = $( Fr.plugin.methods.render.apply(this,[view_data]) );
+      var $html = $( this.framework('render',view_data) );
       element.empty().append( $html );
 
       // trigger the afterRenderQueue
       $.each(afterRenderQueue,function(i,view_id) {
-        var controller = Fr.views[view_id].data('controller');
-        if (controller) {
-          controller.afterRender.apply(Fr.views[view_id]);
-        }
+        Fr.views(view_id,function(view) {
+          var controller = view.data('controller');
+          if (controller) {
+            controller.afterRender.apply( view );
+          }
+        });
       });
 
       // trigger the afterRender
@@ -46,6 +74,8 @@
      *  @param data  represents the data to be made available to the view.
      */
     render: function(data) {
+      var done = false;
+      var nested_callbacks = [];
       var view_data = data || {};
 
       // run the controller
@@ -60,14 +90,38 @@
       }
 
       var html = this.data('render').apply(this, [$.extend(view_data,{
-        render: function(view_id) {
-          // queue for afterRenderQueue triggers
-          afterRenderQueue.push(view_id);
-          return Fr.plugin.methods.render.apply(Fr.views[view_id]);
+        yield: function(view_id) {
+          // generate placeholder
+          var placeholder_id = Fr.rand(10);
+
+          Fr.views(view_id,function(view) {
+
+            var handle_view = function(context) {
+              var partial = view.framework('render');
+              $('#'+placeholder_id,context).replaceWith( partial );
+              var controller = view.data('controller');
+              if (controller) {
+                $.proxy( controller.afterRender ,view)();
+              }
+            };
+
+            if (!done) {
+              nested_callbacks.push( handle_view );
+            } else {
+              handle_view($('body'));
+            }
+          });
+
+          return '<div id="'+placeholder_id+'" style="display: none;"></div>';
         }
       })] );
 
-      return html;
+      var $html = $('<div>'+html+'</div>');
+
+      $.each(nested_callbacks, function(i,cb) { cb($html); });
+
+      done = true;
+      return $html.html();
     }
 
   });

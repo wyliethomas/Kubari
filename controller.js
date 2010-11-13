@@ -10,14 +10,14 @@
 
   Fr.Controller.init = function() {
     $.each(controllers,function(name,controller) {
-      if (Fr.views[name]) {
-        Fr.views[name].data('controller',$.extend({
+      Fr.views(name,function(view) {
+        view.data('controller',$.extend({
           // create the default controller methods
           beforeFilter: function() {},
           html: function() {},
           afterRender: function() {}
-        }, controller.apply(Fr.views[name]) ));
-      }
+        }, controller.apply( view ) ));
+      });
     });
   };
 

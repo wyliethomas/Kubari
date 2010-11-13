@@ -12,7 +12,9 @@
         Fr.Controller.init();
 
         // render the entry point view
-        Fr.views["layouts/application"].framework('renderAsLayout');
+        Fr.views("layouts/application",function(view) {
+          view.framework('renderAsLayout');
+        });
       }
     });
 

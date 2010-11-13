@@ -4,7 +4,6 @@ var Fr = Framework;
 
 // Flesh out the framework with $ available no matter what mode jQuery is in.
 (function($) {
-  Fr.views = {}; // define the views container
   Fr.plugin = { methods: {} };
 
   Fr.rand = function(count) {
