@@ -53,20 +53,13 @@
       var $html = $( this.framework('render',view_data) );
       element.empty().append( $html );
 
-      // trigger the afterRenderQueue
-      $.each(afterRenderQueue,function(i,view_id) {
-        Fr.views(view_id,function(view) {
-          var controller = view.data('controller');
-          if (controller) {
-            controller.afterRender.apply( view );
-          }
-        });
-      });
-
       // trigger the afterRender
       if (this.data('controller')) {
-        this.data('controller').afterRender.apply(this);
+        $.proxy(this.data('controller').afterRender ,this)( $html );
       }
+
+      // trigger the afterRenderQueue
+      $.each(afterRenderQueue,function(i,cb) { cb(); });
     },
 
     /*
@@ -96,19 +89,19 @@
 
           Fr.views(view_id,function(view) {
 
-            var handle_view = function(context) {
-              var partial = view.framework('render');
-              $('#'+placeholder_id,context).replaceWith( partial );
+            var handle_view = function() {
+              var partial = $(view.framework('render'));
+              var tmp = $('#'+placeholder_id).replaceWith( partial );
               var controller = view.data('controller');
               if (controller) {
-                $.proxy( controller.afterRender ,view)();
+                $.proxy( controller.afterRender ,view)( partial );
               }
             };
 
             if (!done) {
-              nested_callbacks.push( handle_view );
+              afterRenderQueue.push( handle_view );
             } else {
-              handle_view($('body'));
+              handle_view();
             }
           });
 
@@ -116,12 +109,8 @@
         }
       })] );
 
-      var $html = $('<div>'+html+'</div>');
-
-      $.each(nested_callbacks, function(i,cb) { cb($html); });
-
       done = true;
-      return $html.html();
+      return html;
     }
 
   });
