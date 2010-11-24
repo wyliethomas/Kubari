@@ -18,9 +18,7 @@
       }
     });
 
-    setTimeout(function() {
-      $(document).framework(); // call init
-    },1);
+    //$(document).framework(); // call init
 
   });
 })(jQuery);

@@ -82,7 +82,7 @@
         }
       }
 
-      var html = this.data('render').apply(this, [$.extend(view_data,{
+      var html = this.data('render').call(this, $.extend(view_data,{
         yield: function(view_id) {
           // generate placeholder
           var placeholder_id = Fr.rand(10);
@@ -107,7 +107,7 @@
 
           return '<div id="'+placeholder_id+'" style="display: none;"></div>';
         }
-      })] );
+      }) );
 
       done = true;
       return html;

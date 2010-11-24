@@ -2,6 +2,19 @@
 var Framework = {};
 var Fr = Framework;
 
+jQuery.NewPlugin = function(methods) {
+  return function(method) {
+    // Method calling logic
+    if ( methods[method] ) {
+      return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+    } else if ( typeof method === 'object' || ! method ) {
+      return methods.init.apply( this, arguments );
+    } else {
+      $.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+    }
+  };
+};
+
 // Flesh out the framework with $ available no matter what mode jQuery is in.
 (function($) {
   Fr.plugin = { methods: {} };
@@ -17,15 +30,6 @@ var Fr = Framework;
     return text;
   };
 
-  $.fn.framework = function(method) {
-    // Method calling logic
-    if ( Fr.plugin.methods[method] ) {
-      return Fr.plugin.methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-    } else if ( typeof method === 'object' || ! method ) {
-      return Fr.plugin.methods.init.apply( this, arguments );
-    } else {
-      $.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
-    }
-  };
+  $.fn.framework = $.NewPlugin( Fr.plugin.methods );
 
 })(jQuery);
