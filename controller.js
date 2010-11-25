@@ -14,7 +14,7 @@
         view.data('controller',$.extend({
           // create the default controller methods
           beforeFilter: function() {},
-          html: function() {},
+          render: function() {},
           afterRender: function() {}
         }, controller.apply( view ) ));
       });

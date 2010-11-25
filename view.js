@@ -47,70 +47,83 @@
     },
 
     renderTo: function(element,view_data) {
+      var self = this;
       if (!(element instanceof jQuery)) {
         element = $(element);
       }
-      var $html = $( this.framework('render',view_data) );
-      element.empty().append( $html );
+      self.framework('render',view_data,function($html) {
+        element.empty().append( $html );
 
-      // trigger the afterRender
-      if (this.data('controller')) {
-        $.proxy(this.data('controller').afterRender ,this)( $html );
-      }
+        // trigger the afterRender
+        if (self.data('controller')) {
+          $.proxy(self.data('controller').afterRender ,self)( $html );
+        }
 
-      // trigger the afterRenderQueue
-      $.each(afterRenderQueue,function(i,cb) { cb(); });
+        // trigger the afterRenderQueue
+        $.each(afterRenderQueue,function(i,cb) { cb(); });
+      });
     },
 
     /*
      *  This assumes the 'this' is the view to be rendered.
      *  @param data  represents the data to be made available to the view.
      */
-    render: function(data) {
+    render: function(data,callback) {
+      var self = this;
       var done = false;
-      var nested_callbacks = [];
       var view_data = data || {};
 
+      // run the actual render
+      var run = function() {
+        var rendered_html = self.data('render').call(self, $.extend(view_data,{
+          yield: function(view_id) {
+            // generate placeholder
+            var placeholder_id = Fr.rand(10);
+
+            Fr.views(view_id,function(view) {
+
+              var handle_view = function() {
+                view.framework('render',{},function(partial) {
+                  var tmp = $('#'+placeholder_id).replaceWith( partial );
+                  console.log(view);
+                  var controller = view.data('controller');
+                  if (controller) {
+                    $.proxy( controller.afterRender ,view)( partial );
+                  }
+                });
+              };
+
+              if (!done) {
+                afterRenderQueue.push( handle_view );
+              } else {
+                handle_view();
+              }
+            });
+
+            return '<div id="'+placeholder_id+'" style="display: none;"></div>';
+          }
+        }) );
+
+        done = true;
+
+        callback( $(rendered_html) );
+      };
+
       // run the controller
-      var controller = this.data('controller');
+      var controller = self.data('controller');
       if (controller) {
         if ( controller.beforeFilter() === false ) {
           // TODO: bail on the rendering process
           console.log('bail');
         } else {
-          $.extend(view_data, controller.html()); // add the results of the controller to the view_data
-        }
-      }
-
-      var html = this.data('render').call(this, $.extend(view_data,{
-        yield: function(view_id) {
-          // generate placeholder
-          var placeholder_id = Fr.rand(10);
-
-          Fr.views(view_id,function(view) {
-
-            var handle_view = function() {
-              var partial = $(view.framework('render'));
-              var tmp = $('#'+placeholder_id).replaceWith( partial );
-              var controller = view.data('controller');
-              if (controller) {
-                $.proxy( controller.afterRender ,view)( partial );
-              }
-            };
-
-            if (!done) {
-              afterRenderQueue.push( handle_view );
-            } else {
-              handle_view();
-            }
+          controller.render(function(data_from_controller) {
+            $.extend(view_data,data_from_controller); // add the results of the controller to the view_data
+            run();
           });
-
-          return '<div id="'+placeholder_id+'" style="display: none;"></div>';
         }
-      }) );
-
-      done = true;
-      return html;
+      } else {
+        run();
+      }
     }
 
   });

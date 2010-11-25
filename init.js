@@ -2,11 +2,11 @@
   $(function() {
 
     $.extend(Fr.plugin.methods,{
-      init: function() {
-        this.doc = this; // keep the base document
+      init: function(app_name) {
+        Fr[app_name] = this; // keep the context of the framework
 
         // load the views into the framework
-        $("#_framework-views",this.doc).framework("_loadViews_");
+        $("#_framework-views",this).framework("_loadViews_");
 
         // initialize the controllers
         Fr.Controller.init();
