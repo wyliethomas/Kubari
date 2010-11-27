@@ -14,7 +14,7 @@
       loading[key] = true;
       // see if we can load it
       $.get(AppRoot+'/views/'+key+'.html.ejs',function(raw_view_html) {
-        $('<div>'+raw_view_html+'</div>').framework('_loadView_',key);
+        $('<div>'+ raw_view_html.replace(/<%/g,'&lt;%').replace(/%>/g,'%&gt;') +'</div>').framework('_loadView_',key);
         callback( Fr._views[key] );
         $.each(waiting[key],function(i,cb) {
           cb( Fr._views[key] );
@@ -85,7 +85,6 @@
               var handle_view = function() {
                 view.framework('render',{},function(partial) {
                   var tmp = $('#'+placeholder_id).replaceWith( partial );
-                  console.log(view);
                   var controller = view.data('controller');
                   if (controller) {
                     $.proxy( controller.afterRender ,view)( partial );
