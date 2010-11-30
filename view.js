@@ -85,7 +85,6 @@
               var handle_view = function() {
                 view.framework('render',{},function(partial) {
                   var tmp = $('#'+placeholder_id).replaceWith( partial );
-                  console.log(view);
                   var controller = view.data('controller');
                   if (controller) {
                     $.proxy( controller.afterRender ,view)( partial );
