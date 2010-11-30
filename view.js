@@ -13,7 +13,7 @@
       waiting[key] = [];
       loading[key] = true;
       // see if we can load it
-      var cache_killer = '?' + (new Date()).getTime());
+      var cache_killer = '?' + (new Date()).getTime();
       $.get(AppRoot+'/views/'+key+'.html.ejs'+cache_killer,function(raw_view_html) {
         $('<div>'+ raw_view_html.replace(/<%/g,'&lt;%').replace(/%>/g,'%&gt;') +'</div>').framework('_loadView_',key);
         callback( Fr._views[key] );
