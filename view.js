@@ -77,14 +77,15 @@
       // run the actual render
       var run = function() {
         var rendered_html = self.data('render').call(self, $.extend(view_data,{
-          yield: function(view_id) {
+          yield: function(view_id, local_data) {
+            local_data = local_data || {};
             // generate placeholder
             var placeholder_id = Fr.rand(10);
 
             Fr.views(view_id,function(view) {
 
               var handle_view = function() {
-                view.framework('render',{},function(partial) {
+                view.framework('render',local_data,function(partial) {
                   var tmp = $('#'+placeholder_id).replaceWith( partial );
                   var controller = view.data('controller');
                   if (controller) {
