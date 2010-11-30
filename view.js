@@ -13,8 +13,9 @@
       waiting[key] = [];
       loading[key] = true;
       // see if we can load it
-      $.get(AppRoot+'/views/'+key+'.html.ejs',function(raw_view_html) {
-        $('<div>'+raw_view_html+'</div>').framework('_loadView_',key);
+      var cache_killer = '?' + (new Date()).getTime();
+      $.get(AppRoot+'/views/'+key+'.html.ejs'+cache_killer,function(raw_view_html) {
+        $('<div>'+ raw_view_html.replace(/<%/g,'&lt;%').replace(/%>/g,'%&gt;') +'</div>').framework('_loadView_',key);
         callback( Fr._views[key] );
         $.each(waiting[key],function(i,cb) {
           cb( Fr._views[key] );
@@ -76,14 +77,15 @@
       // run the actual render
       var run = function() {
         var rendered_html = self.data('render').call(self, $.extend(view_data,{
-          yield: function(view_id) {
+          yield: function(view_id, local_data) {
+            local_data = local_data || {};
             // generate placeholder
             var placeholder_id = Fr.rand(10);
 
             Fr.views(view_id,function(view) {
 
               var handle_view = function() {
-                view.framework('render',{},function(partial) {
+                view.framework('render',local_data,function(partial) {
                   var tmp = $('#'+placeholder_id).replaceWith( partial );
                   var controller = view.data('controller');
                   if (controller) {
