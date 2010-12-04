@@ -11,6 +11,27 @@ function _extendBaseType_(baseType, funcName, func) {
 function _extendBasePrototype_( baseType, funcName, func ) { return _extendBaseType_(baseType.prototype, funcName, func); }
 
 /*
+ *  Inheritance
+ */
+Function.prototype.inheritsFrom = function( parentClassOrObject ){ 
+  if ( parentClassOrObject.constructor == Function ) 
+  { 
+    //Normal Inheritance 
+    this.prototype = new parentClassOrObject;
+    this.prototype.constructor = this;
+    this.prototype.parent = parentClassOrObject.prototype;
+  } 
+  else 
+  { 
+    //Pure Virtual Inheritance 
+    this.prototype = parentClassOrObject;
+    this.prototype.constructor = this;
+    this.prototype.parent = parentClassOrObject;
+  } 
+  return this;
+}
+
+/*
  *  String
  */
 _extendBasePrototype_(String,'trim',function() {

@@ -1,24 +1,27 @@
 (function($) { // make sure jQuery is available as $
+  var all_controllers = {};
 
-  Fr.Controller = Fr.Controller || {}; // make sure the Controller namespace is available
-
-  var controllers = {};
-
-  Fr.Controller.create = function(name,controller) {
-    controllers[name] = controller;
+  Fr.Controller = {
+    create: function(app_name,controller_name,controller) {
+      console.log('create controller '+controller_name);
+      var list = all_controllers[app_name] = all_controllers[app_name] || {};
+      list[controller_name] = controller;
+    }
   };
 
-  Fr.Controller.init = function() {
-    $.each(controllers,function(name,controller) {
-      Fr.views(name,function(view) {
-        view.data('controller',$.extend({
-          // create the default controller methods
-          beforeFilter: function() {},
-          render: function() {},
-          afterRender: function() {}
-        }, controller.apply( view ) ));
+  $.extend(Fr.plugin.methods,{
+    _loadControllers_: function(app_name) {
+      var self = this;
+      $.each(all_controllers[app_name],function(name,controller) {
+        self.framework('views',name,function(view) {
+          view.data('controller',$.extend({
+            // create the default controller methods
+            beforeFilter: function() {},
+            render: function() {},
+            afterRender: function() {}
+          }, controller.apply( view ) ));
+        });
       });
-    });
-  };
-
+    }
+  });
 })(jQuery);

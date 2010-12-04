@@ -6,14 +6,15 @@
         Fr[app_name] = this; // keep the context of the framework
 
         // load the views into the framework
-        $("#_framework-views",this).framework("_loadViews_");
+        this.data('_views',{});
+        this.framework("_loadViews_");
 
         // initialize the controllers
-        Fr.Controller.init();
+        this.framework('_loadControllers_',app_name);
 
         // render the entry point view
-        Fr.views("layouts/application",function(view) {
-          view.framework('renderAsLayout');
+        this.framework('views',"layouts/application",function(view) {
+          Fr[app_name].framework('renderAsLayout',view);
         });
       }
     });
