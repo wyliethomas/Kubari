@@ -3,7 +3,6 @@
 
   Fr.Controller = {
     create: function(app_name,controller_name,controller) {
-      console.log('create controller '+controller_name);
       var list = all_controllers[app_name] = all_controllers[app_name] || {};
       list[controller_name] = controller;
     }
