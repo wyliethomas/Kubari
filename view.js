@@ -59,7 +59,7 @@
     renderTo: function(view,element,view_data) {
       var self = this;
       if (!(element instanceof jQuery)) {
-        element = $(element);
+        element = $(element,this);
       }
       self.framework('render',view,view_data,function($html) {
         element.empty().append( $html );
@@ -97,7 +97,7 @@
 
               var handle_view = function() {
                 self.framework('render',view,local_data,function(partial) {
-                  var tmp = $('#'+placeholder_id).replaceWith( partial );
+                  var tmp = $('#'+placeholder_id,self).replaceWith( partial );
                   var controller = view.data('controller');
                   if (controller) {
                     $.proxy( controller.afterRender ,view)( partial );
