@@ -18,7 +18,7 @@
         loading[key] = true;
         // see if we can load it
         var cache_killer = '?' + (new Date()).getTime();
-        $.get(AppRoot+'/views/'+key+'.html.ejs'+cache_killer,function(raw_view_html) {
+        $.get(this.data('AppRoot')+'/views/'+key+'.html.ejs'+cache_killer,function(raw_view_html) {
           view = self.framework('_loadView_',key,$('<div>'+ raw_view_html.replace(/<%/g,'&lt;%').replace(/%>/g,'%&gt;') +'</div>'));
           callback( view );
           $.each(waiting[key],function(i,cb) {

@@ -2,8 +2,9 @@
   $(function() {
 
     $.extend(Fr.plugin.methods,{
-      init: function(app_name) {
+      init: function(app_name,app_root) {
         Fr[app_name] = this; // keep the context of the framework
+        this.data('AppRoot',app_root);
 
         // load the views into the framework
         this.data('_views',{});
