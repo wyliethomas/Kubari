@@ -15,10 +15,10 @@
         self.framework('views',name,function(view) {
           view.data('controller',$.extend({
             // create the default controller methods
-            beforeFilter: function() {},
+            beforeFilter: $.noop,
             render: function(done) {done()},
-            afterRender: function() {},
-            cleanUp: function() {}
+            afterRender: $.noop,
+            cleanUp: $.noop
           }, controller.apply( view ) ));
         });
       });

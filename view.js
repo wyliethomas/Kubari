@@ -38,6 +38,7 @@
       var _views = this.data('_views');
       
       _views[key] = view_elem.detach();
+      _views[key].data('id', key);
       _views[key].data('render', function(view_data) {
         return new EJS({text: this.html().replace(/&lt;%/g,'<%').replace(/%&gt;/g,'%>') }).render(view_data);
       })
@@ -62,12 +63,31 @@
       if (!(element instanceof jQuery)) {
         element = $(element,this);
       }
+
+      // trigger the cleanUp
+      element.find('[data-view]').each(function() {
+        var old_view = $(this);
+        self.framework('views',old_view.attr('data-view'),function(view2) {
+          if (view2.data('controller')) {
+            view2.data('controller').cleanUp.call(old_view);
+          }
+        });
+      });
+      if (element.attr('data-view')) {
+        self.framework('views',element.attr('data-view'),function(view2) {
+          if (view2.data('controller')) {
+            view2.data('controller').cleanUp.call(element);
+          }
+        })
+      }
+
       self.framework('render',view,view_data,arq,function($html) {
         element.empty().append( $html );
+        element.attr('data-view',view.data('id'));
 
         // trigger the afterRender
         if (view.data('controller')) {
-          $.proxy(view.data('controller').afterRender ,view)( $html );
+          view.data('controller').afterRender.call(view,$html);
         }
 
         // trigger the afterRenderQueue
@@ -95,13 +115,13 @@
             // generate placeholder
             var placeholder_id = Fr.rand(10);
 
-            self.framework('views',view_id,function(view) {
+            self.framework('views',view_id,function(view2) {
               var handle_view = function() {
-                self.framework('render',view,local_data,sub_arq,function(partial) {
+                self.framework('render',view2,local_data,sub_arq,function(partial) {
                   var tmp = $('#'+placeholder_id,self).replaceWith( partial );
-                  var controller = view.data('controller');
+                  var controller = view2.data('controller');
                   if (controller) {
-                    $.proxy( controller.afterRender ,view)( partial );
+                    $.proxy( controller.afterRender ,view2)( partial );
                   }
 
                   // trigger the sub_arq
@@ -117,13 +137,13 @@
               }
             });
 
-            return '<div id="'+placeholder_id+'" style="display: none;"></div>';
+            return '<span id="'+placeholder_id+'" style="display: none;"></span>';
           }
         }) );
 
         done = true;
 
-        callback( $(rendered_html) );
+        callback( $('<span data-view="'+view.data('id')+'">'+rendered_html+'</span>') );
       };
 
       // run the controller
