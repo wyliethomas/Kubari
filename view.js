@@ -1,5 +1,4 @@
 (function($) {
-  var afterRenderQueue = [];
   var loading = {};
   var waiting = {};
 
@@ -58,10 +57,12 @@
 
     renderTo: function(view,element,view_data) {
       var self = this;
+      var arq = [];
+
       if (!(element instanceof jQuery)) {
         element = $(element,this);
       }
-      self.framework('render',view,view_data,function($html) {
+      self.framework('render',view,view_data,arq,function($html) {
         element.empty().append( $html );
 
         // trigger the afterRender
@@ -71,7 +72,7 @@
 
         // trigger the afterRenderQueue
         var cb = null;
-        while(cb = afterRenderQueue.shift()) { cb(); }
+        while(cb = arq.shift()) { cb(); }
       });
     },
 
@@ -79,7 +80,7 @@
      *  This assumes the 'this' is the app root.
      *  @param data  represents the data to be made available to the view.
      */
-    render: function(view,data,callback) {
+    render: function(view,data,arq,callback) {
       var self = this;
       var _views = this.data('_views');
       var done = false;
@@ -89,24 +90,28 @@
       var run = function() {
         var rendered_html = view.data('render').call(view, $.extend(view_data,{
           yield: function(view_id, local_data) {
+            var sub_arq = [];
             local_data = local_data || {};
             // generate placeholder
             var placeholder_id = Fr.rand(10);
 
             self.framework('views',view_id,function(view) {
-
               var handle_view = function() {
-                self.framework('render',view,local_data,function(partial) {
+                self.framework('render',view,local_data,sub_arq,function(partial) {
                   var tmp = $('#'+placeholder_id,self).replaceWith( partial );
                   var controller = view.data('controller');
                   if (controller) {
                     $.proxy( controller.afterRender ,view)( partial );
                   }
+
+                  // trigger the sub_arq
+                  var cb = null;
+                  while(cb = sub_arq.shift()) { cb(); }
                 });
               };
 
               if (!done) {
-                afterRenderQueue.push( handle_view );
+                arq.push( handle_view );
               } else {
                 handle_view();
               }
