@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery-cssHooks Test Suite</title>
+	<link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
+	<style>
+		#test {
+			line-height: 0;
+			font-size: 0;
+			margin: 1px 2px 3px 4px;
+			padding: 1px 2px 3px 4px;
+			width: 10px;
+			height: 10px;
+			background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1JREFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jqch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0vr4MkhoXe0rZigAAAABJRU5ErkJggg==');
+			background-position: 3px 5px;
+			-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;
+			-webkit-box-shadow: 1px 2px 10px #000000; -moz-box-shadow: 1px 2px 10px #000000; box-shadow: 1px 2px 10px #000000; 
+			-webkit-transition: border 1s linear; -moz-transition: border 1s linear; transition: border 1s linear;
+			border-image: url("border.png") 27 27 27 27 round round;
+			-moz-border-image: url("border.png") 27 27 27 27 round round;
+			-webkit-border-image: url("border.png") 27 27 27 27 round round;
+			-webkit-box-reflect: below 3px;-moz-box-reflect: below 3px;-o-box-reflect: below 3px;box-reflect: below 3px;
+			text-shadow: rgb(0,0,0) 1px 1px 1px;
+			-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;
+			-ms-box-sizing: border-box;-icab-box-sizing: border-box;-khtml-box-sizing: border-box;
+			-moz-column-count:2;-webkit-column-count:2;-column-count:2;
+			-moz-column-count:2;-webkit-column-count:2;-column-count:2;
+			-moz-column-count:2;-webkit-column-count:2;-column-count:2;
+		}
+	</style>
+	<script src="jquery-1.4.4.js"></script>
+	<script src="qunit/qunit.js"></script>
+	<!-- cssHooks -->
+	<script src="../color.js"></script>
+	<script src="../textshadow.js"></script>
+	<script src="../bgpos.js"></script>
+	<script src="../borderradius.js"></script>
+	<script src="../boxshadow.js"></script>
+	<script src="../marginpadding.js"></script>
+	<script src="../transition.js"></script>
+	<script src="../transform.js"></script>
+	<script src="../borderimage.js"></script>
+	<script src="../borderradiusalt.js"></script>
+	<script src="../boxreflect.js"></script>
+	<script src="../gradients.js"></script>
+	<script src="../boxsizing.js"></script>
+	<script src="../columns.js"></script>
+	<script src="../scale.js"></script>
+	<script src="../rotate.js"></script>
+	<!-- unit tests -->
+	<script src="unit/color.js"></script>
+	<script src="unit/textshadow.js"></script>
+	<script src="unit/bgpos.js"></script>
+	<script src="unit/borderradius.js"></script>
+	<script src="unit/boxshadow.js"></script>
+	<script src="unit/marginpadding.js"></script>
+	<script src="unit/transition.js"></script>
+	<script src="unit/transform.js"></script>
+	<script src="unit/borderimage.js"></script>
+	<script src="unit/borderradiusalt.js"></script>
+	<script src="unit/boxreflect.js"></script>
+	<script src="unit/gradients.js"></script>
+	<script src="unit/boxsizing.js"></script>
+	<script src="unit/columns.js"></script>
+	<script src="unit/rotate.js"></script>
+	<script src="unit/scale.js"></script>
+</head>
+<body>
+	<h1 id="qunit-header">jQuery-cssHooks Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">
+		<div id="test">Hello World</div>
+	</div>
+</body>
+</html>

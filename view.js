@@ -97,7 +97,6 @@
       var height = element.height();
       var old_overflow = element.css('overflow');
       var old_width = element.css('width');
-      var old_height = element.css('height');
       var old_trans = null;
       var new_trans = null;
 
@@ -129,7 +128,7 @@
         new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
           new_content_wrap.detach().children().detach().appendTo(element);
           element
-            .css('height',old_height)
+            .css('height','auto')
             .css('width',old_width)
             .css('overflow',old_overflow);
           if ($.isFunction(callback)) callback.call(element);
