@@ -65,21 +65,7 @@
       }
 
       // trigger the cleanUp
-      element.find('[data-view]').each(function() {
-        var old_view = $(this);
-        self.framework('views',old_view.attr('data-view'),function(view2) {
-          if (view2.data('controller')) {
-            view2.data('controller').cleanUp.call(old_view);
-          }
-        });
-      });
-      if (element.attr('data-view')) {
-        self.framework('views',element.attr('data-view'),function(view2) {
-          if (view2.data('controller')) {
-            view2.data('controller').cleanUp.call(element);
-          }
-        })
-      }
+      Fr.plugin.methods._cleanUp.call(self,element);
 
       self.framework('render',view,view_data,arq,function($html) {
         element.empty().append( $html );
@@ -94,6 +80,79 @@
         var cb = null;
         while(cb = arq.shift()) { cb(); }
       });
+    },
+
+    transitionTo: function(view, element, transition, view_data, callback) {
+      var self = this;
+      var arq = [];
+
+      if (!(element instanceof jQuery)) {
+        element = $(element,this);
+      }
+
+      // trigger the cleanUp
+      Fr.plugin.methods._cleanUp.call(self,element);
+
+      var width = element.width();
+      var height = element.height();
+      var old_trans = null;
+      var new_trans = null;
+
+      element.wrapInner( '<div id="_fr_transition_" style="position: absolute; width: '+width+'px; height: '+height+'px;"></div>' );
+      switch(transition) {
+      case 'slide-left':
+        old_trans = {left: -width};
+        new_trans = {right: 0};
+        element.append('<div id="_fr_transition_new_conten_" style="position: absolute; right: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+        break;
+      case 'slide-right':
+        old_trans = {right: -width};
+        new_trans = {left: 0};
+        element.append('<div id="_fr_transition_new_conten_" style="position: absolute; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+        break;
+      }
+      var old_content_wrap = element.find('#_fr_transition_');
+      var new_content_wrap = element.find('#_fr_transition_new_conten_');
+
+      self.framework('render',view,view_data,arq,function($html) {
+        old_content_wrap.animate(old_trans ,300, 'linear', function() {
+          old_content_wrap.remove();
+        });
+        new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
+          new_content_wrap.detach().children().detach().appendTo(element);
+          if ($.isFunction(callback)) callback.call(element);
+        });
+        //element.empty().append( $html );
+        element.attr('data-view',view.data('id'));
+
+        // trigger the afterRender
+        if (view.data('controller')) {
+          view.data('controller').afterRender.call(view,$html);
+        }
+
+        // trigger the afterRenderQueue
+        var cb = null;
+        while(cb = arq.shift()) { cb(); }
+      });
+    },
+
+    _cleanUp: function(element) {
+      var self = this;
+      element.find('[data-view]').each(function() {
+        var old_view = $(this);
+        self.framework('views',old_view.attr('data-view'),function(view) {
+          if (view.data('controller')) {
+            view.data('controller').cleanUp.call(old_view);
+          }
+        });
+      });
+      if (element.attr('data-view')) {
+        self.framework('views',element.attr('data-view'),function(view) {
+          if (view.data('controller')) {
+            view.data('controller').cleanUp.call(element);
+          }
+        })
+      }
     },
 
     /*
@@ -170,7 +229,11 @@
     init: function(params) {
       var self = this;
       this.framework('views',params.view,function(view) {
-        self.framework('renderTo',view,params.target);
+        if (params['transition']) {
+          self.framework('transitionTo', view, params.target, params.transition, params['callback']);
+        } else {
+          self.framework('renderTo',view,params.target);
+        }
       });
     }
   });
