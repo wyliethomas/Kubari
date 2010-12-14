@@ -95,8 +95,16 @@
 
       var width = element.width();
       var height = element.height();
+      var old_overflow = element.css('overflow');
+      var old_width = element.css('width');
+      var old_height = element.css('height');
       var old_trans = null;
       var new_trans = null;
+
+      element
+        .css('height',height)
+        .css('width',width)
+        .css('overflow','hidden');
 
       element.wrapInner( '<div id="_fr_transition_" style="position: absolute; width: '+width+'px; height: '+height+'px;"></div>' );
       switch(transition) {
@@ -108,7 +116,7 @@
       case 'slide-right':
         old_trans = {right: -width};
         new_trans = {left: 0};
-        element.append('<div id="_fr_transition_new_conten_" style="position: absolute; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+        element.append('<div id="_fr_transition_new_conten_" style="position: relative; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
         break;
       }
       var old_content_wrap = element.find('#_fr_transition_');
@@ -120,9 +128,12 @@
         });
         new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
           new_content_wrap.detach().children().detach().appendTo(element);
+          element
+            .css('height',old_height)
+            .css('width',old_width)
+            .css('overflow',old_overflow);
           if ($.isFunction(callback)) callback.call(element);
         });
-        //element.empty().append( $html );
         element.attr('data-view',view.data('id'));
 
         // trigger the afterRender
