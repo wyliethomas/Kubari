@@ -45,3 +45,13 @@ _extendBasePrototype_(String,'trim',function() {
 /*
  *  Date
  */
+
+/*
+ * View Helpers
+ */
+function img_tag(src,options) {
+  var img = '<img src="'+src+'"';
+  if (options['class']) img += ' class="'+options['class']+'"';
+  img += '/>';
+  return img;
+}
