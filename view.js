@@ -56,7 +56,7 @@
       this.framework('renderTo',view,'body');
     },
 
-    renderTo: function(view,element,view_data) {
+    renderTo: function(view, element, view_data) {
       var self = this;
       var arq = [];
 
@@ -82,7 +82,7 @@
       });
     },
 
-    transitionTo: function(view, element, transition, view_data, callback) {
+    transitionTo: function(view, element, view_data, transition, callback) {
       var self = this;
       var arq = [];
 
@@ -128,8 +128,8 @@
         new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
           new_content_wrap.detach().children().detach().appendTo(element);
           element
-            .css('height','auto')
-            .css('width',old_width)
+            .css('height','')
+            .css('width','')
             .css('overflow',old_overflow);
           if ($.isFunction(callback)) callback.call(element);
         });
@@ -225,7 +225,7 @@
           controller.render(function(data_from_controller) {
             $.extend(view_data,data_from_controller); // add the results of the controller to the view_data
             run();
-          });
+          },data);
         }
       } else {
         run();
@@ -240,9 +240,9 @@
       var self = this;
       this.framework('views',params.view,function(view) {
         if (params['transition']) {
-          self.framework('transitionTo', view, params.target, params.transition, params['callback']);
+          self.framework('transitionTo', view, params.target, params['args'], params.transition, params['callback']);
         } else {
-          self.framework('renderTo',view,params.target);
+          self.framework('renderTo', view, params.target, params['args']);
         }
       });
     }

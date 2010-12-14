@@ -45,3 +45,16 @@ _extendBasePrototype_(String,'trim',function() {
 /*
  *  Date
  */
+
+/*
+ * Function Helpers
+ */
+function run_once(func) {
+  var ran = false;
+  return function() {
+    if (!ran) {
+      ran = true;
+      func.apply(this,arguments);
+    }
+  };
+}
