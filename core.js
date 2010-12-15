@@ -3,6 +3,8 @@ var Framework = {};
 var Fr = Framework;
 
 jQuery.NewPlugin = function(methods) {
+  if ($.isFunction(methods)) methods = methods();
+
   return function(method) {
     // Method calling logic
     if ( methods[method] ) {
