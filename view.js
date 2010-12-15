@@ -82,7 +82,7 @@
       });
     },
 
-    transitionTo: function(view, element, view_data, transition, callback) {
+    transitionTo: function(view, element, view_data, transition, callback,replace_wh) {
       var self = this;
       var arq = [];
 
@@ -96,6 +96,7 @@
       var width = element.width();
       var height = element.height();
       var old_overflow = element.css('overflow');
+      var old_height = element.css('height');
       var old_width = element.css('width');
       var old_trans = null;
       var new_trans = null;
@@ -127,10 +128,11 @@
         });
         new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
           new_content_wrap.detach().children().detach().appendTo(element);
-          element
-            .css('height','')
-            .css('width','')
-            .css('overflow',old_overflow);
+          if (replace_wh) {
+            element.css({height: old_height, width: old_width, overflow: old_overflow});
+          } else {
+            element.css({height: '', width: '', overflow: old_overflow});
+          }
           if ($.isFunction(callback)) callback.call(element);
         });
         element.attr('data-view',view.data('id'));
@@ -240,7 +242,7 @@
       var self = this;
       this.framework('views',params.view,function(view) {
         if (params['transition']) {
-          self.framework('transitionTo', view, params.target, params['args'], params.transition, params['callback']);
+          self.framework('transitionTo', view, params.target, params['args'], params.transition, params['callback'],params['replace_wh']);
         } else {
           self.framework('renderTo', view, params.target, params['args']);
         }
