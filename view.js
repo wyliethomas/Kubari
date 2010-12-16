@@ -41,7 +41,12 @@
       _views[key].data('id', key);
       _views[key].data('render', function(view_data) {
         return new EJS({text: this.html().replace(/&lt;%/g,'<%').replace(/%&gt;/g,'%>') }).render(view_data);
-      })
+      });
+      _views[key].data('afterRender', function() {
+        if (_views[key].data('controller')) {
+          _views[key].data('controller').afterRender.call(_views[key]);
+        }
+      });
       return _views[key];
     },
 
@@ -72,9 +77,7 @@
         element.attr('data-view',view.data('id'));
 
         // trigger the afterRender
-        if (view.data('controller')) {
-          view.data('controller').afterRender.call(view,$html);
-        }
+        view.data('afterRender')();
 
         // trigger the afterRenderQueue
         var cb = null;
@@ -136,9 +139,7 @@
         element.attr('data-view',view.data('id'));
 
         // trigger the afterRender
-        if (view.data('controller')) {
-          view.data('controller').afterRender.call(view,$html);
-        }
+        view.data('afterRender')();
 
         // trigger the afterRenderQueue
         var cb = null;
@@ -175,9 +176,18 @@
       }
     },
 
-    _getCache: function(view,noCache) {
+    _getCache: function(view,arq,noCache) {
+      var self = this;
       if (view.data('use_cache') && view.data('cache')) {
         console.log('get cache',view.data('id'));
+        view.data('cache').find('[data-view]').each(function() {
+          var view_id = $(this).attr('data-view');
+          arq.push(function() {
+            self.framework('views',view_id,function(view2) {
+              view2.data('afterRender')();
+            });
+          });
+        });
         return view.data('cache');
       } else {
         return noCache();
@@ -207,10 +217,7 @@
               var handle_view = function() {
                 self.framework('render',view2,local_data,sub_arq,function(partial) {
                   var tmp = $('#'+placeholder_id,self).replaceWith( partial );
-                  var controller = view2.data('controller');
-                  if (controller) {
-                    $.proxy( controller.afterRender ,view2)( partial );
-                  }
+                  view2.data('afterRender')();
 
                   // trigger the sub_arq
                   var cb = null;
@@ -229,7 +236,7 @@
           }
         };
         //var rendered_html = view.data('render').call(view, $.extend(view_data,view_functions));
-        var rendered_html = Fr.plugin.methods._getCache(view,function() {
+        var rendered_html = Fr.plugin.methods._getCache.call(self,view,arq,function() {
           var tmp = view.data('render').call(view, $.extend(view_data,view_functions));
           return $('<span data-view="'+view.data('id')+'">'+tmp+'</span>') 
         });
