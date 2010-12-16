@@ -150,14 +150,6 @@
     _cleanUp: function(element) {
       var self = this;
 
-      if (element.attr('data-view')) {
-        self.framework('views',element.attr('data-view'),function(view) {
-          if (view.data('controller')) {
-            view.data('controller').cleanUp.call(element);
-          }
-          Fr.plugin.methods._cache(element,view);
-        });
-      }
       element.find('[data-view]').each(function() {
         var old_view = $(this);
         self.framework('views',old_view.attr('data-view'),function(view) {
@@ -166,12 +158,19 @@
           }
         });
       });
+      if (element.attr('data-view')) {
+        self.framework('views',element.attr('data-view'),function(view) {
+          if (view.data('controller')) {
+            view.data('controller').cleanUp.call(element);
+          }
+          Fr.plugin.methods._cache(element,view);
+        });
+      }
     },
 
     _cache: function(element,view) {
       // check to see if we should cache the old view
       if (view.data('use_cache') && !view.data('cache')) {
-        console.log('cache',view.data('id'));
         view.data('cache',element.children().detach());
       }
     },
@@ -179,7 +178,6 @@
     _getCache: function(view,arq,noCache) {
       var self = this;
       if (view.data('use_cache') && view.data('cache')) {
-        console.log('get cache',view.data('id'));
         view.data('cache').find('[data-view]').each(function() {
           var view_id = $(this).attr('data-view');
           arq.push(function() {
