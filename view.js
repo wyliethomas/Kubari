@@ -148,6 +148,15 @@
 
     _cleanUp: function(element) {
       var self = this;
+
+      if (element.attr('data-view')) {
+        self.framework('views',element.attr('data-view'),function(view) {
+          if (view.data('controller')) {
+            view.data('controller').cleanUp.call(element);
+          }
+          Fr.plugin.methods._cache(element,view);
+        });
+      }
       element.find('[data-view]').each(function() {
         var old_view = $(this);
         self.framework('views',old_view.attr('data-view'),function(view) {
@@ -156,12 +165,22 @@
           }
         });
       });
-      if (element.attr('data-view')) {
-        self.framework('views',element.attr('data-view'),function(view) {
-          if (view.data('controller')) {
-            view.data('controller').cleanUp.call(element);
-          }
-        })
+    },
+
+    _cache: function(element,view) {
+      // check to see if we should cache the old view
+      if (view.data('use_cache') && !view.data('cache')) {
+        console.log('cache',view.data('id'));
+        view.data('cache',element.children().detach());
+      }
+    },
+
+    _getCache: function(view,noCache) {
+      if (view.data('use_cache') && view.data('cache')) {
+        console.log('get cache',view.data('id'));
+        return view.data('cache');
+      } else {
+        return noCache();
       }
     },
 
@@ -177,7 +196,7 @@
 
       // run the actual render
       var run = function() {
-        var rendered_html = view.data('render').call(view, $.extend(view_data,{
+        var view_functions = {
           yield: function(view_id, local_data) {
             var sub_arq = [];
             local_data = local_data || {};
@@ -208,16 +227,21 @@
 
             return '<span id="'+placeholder_id+'" style="display: none;"></span>';
           }
-        }) );
+        };
+        //var rendered_html = view.data('render').call(view, $.extend(view_data,view_functions));
+        var rendered_html = Fr.plugin.methods._getCache(view,function() {
+          var tmp = view.data('render').call(view, $.extend(view_data,view_functions));
+          return $('<span data-view="'+view.data('id')+'">'+tmp+'</span>') 
+        });
 
         done = true;
 
-        callback( $('<span data-view="'+view.data('id')+'">'+rendered_html+'</span>') );
+        callback( rendered_html );
       };
 
       // run the controller
       var controller = view.data('controller');
-      if (controller) {
+      if (controller && !view.data('cache')) {
         if ( controller.beforeFilter() === false ) {
           // TODO: bail on the rendering process
           console.log('bail');

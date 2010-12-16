@@ -3,6 +3,7 @@
     init: function(app_name,app_root) {
       Fr[app_name] = this; // keep the context of the framework
       this.data('AppRoot',app_root);
+      this.data('AppName',app_name);
 
       // load the views into the framework
       this.data('_views',{});
