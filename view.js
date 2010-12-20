@@ -61,6 +61,29 @@
       this.framework('renderTo',view,'body');
     },
 
+    appendTo: function(view, element, view_data) {
+      var self = this;
+      var arq = [];
+
+      self.framework('render',view,view_data,arq,function($html) {
+        element.append( $html );
+        view.data('afterRender')();
+        var cb = null;
+        while(cb = arq.shift()) { cb(); }
+      });
+    },
+    prependTo: function(view, element, view_data) {
+      var self = this;
+      var arq = [];
+
+      self.framework('render',view,view_data,arq,function($html) {
+        element.prepend( $html );
+        view.data('afterRender')();
+        var cb = null;
+        while(cb = arq.shift()) { cb(); }
+      });
+    },
+
     renderTo: function(view, element, view_data) {
       var self = this;
       var arq = [];
