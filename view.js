@@ -93,18 +93,18 @@
       }
 
       // trigger the cleanUp
-      Fr.plugin.methods._cleanUp.call(self,element);
+      Fr.plugin.methods._cleanUp.call(self,element,function() {
+        self.framework('render',view,view_data,arq,function($html) {
+          element.empty().append( $html );
+          element.attr('data-view',view.data('id'));
 
-      self.framework('render',view,view_data,arq,function($html) {
-        element.empty().append( $html );
-        element.attr('data-view',view.data('id'));
+          // trigger the afterRender
+          view.data('afterRender')();
 
-        // trigger the afterRender
-        view.data('afterRender')();
-
-        // trigger the afterRenderQueue
-        var cb = null;
-        while(cb = arq.shift()) { cb(); }
+          // trigger the afterRenderQueue
+          var cb = null;
+          while(cb = arq.shift()) { cb(); }
+        });
       });
     },
 
@@ -117,62 +117,62 @@
       }
 
       // trigger the cleanUp
-      Fr.plugin.methods._cleanUp.call(self,element);
+      Fr.plugin.methods._cleanUp.call(self,element,function() {
+        var width = element.width();
+        var height = element.height();
+        var old_overflow = element.css('overflow');
+        var old_height = element.css('height');
+        var old_width = element.css('width');
+        var old_trans = null;
+        var new_trans = null;
 
-      var width = element.width();
-      var height = element.height();
-      var old_overflow = element.css('overflow');
-      var old_height = element.css('height');
-      var old_width = element.css('width');
-      var old_trans = null;
-      var new_trans = null;
+        element
+          .css('height',height)
+          .css('width',width)
+          .css('overflow','hidden');
 
-      element
-        .css('height',height)
-        .css('width',width)
-        .css('overflow','hidden');
+        element.wrapInner( '<div id="_fr_transition_" style="position: absolute; width: '+width+'px; height: '+height+'px;"></div>' );
+        switch(transition) {
+        case 'slide-left':
+          old_trans = {left: -width};
+          new_trans = {right: 0};
+          element.append('<div id="_fr_transition_new_conten_" style="position: absolute; right: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+          break;
+        case 'slide-right':
+          old_trans = {right: -width};
+          new_trans = {left: 0};
+          element.append('<div id="_fr_transition_new_conten_" style="position: relative; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+          break;
+        }
+        var old_content_wrap = element.find('#_fr_transition_');
+        var new_content_wrap = element.find('#_fr_transition_new_conten_');
 
-      element.wrapInner( '<div id="_fr_transition_" style="position: absolute; width: '+width+'px; height: '+height+'px;"></div>' );
-      switch(transition) {
-      case 'slide-left':
-        old_trans = {left: -width};
-        new_trans = {right: 0};
-        element.append('<div id="_fr_transition_new_conten_" style="position: absolute; right: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
-        break;
-      case 'slide-right':
-        old_trans = {right: -width};
-        new_trans = {left: 0};
-        element.append('<div id="_fr_transition_new_conten_" style="position: relative; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
-        break;
-      }
-      var old_content_wrap = element.find('#_fr_transition_');
-      var new_content_wrap = element.find('#_fr_transition_new_conten_');
+        self.framework('render',view,view_data,arq,function($html) {
+          old_content_wrap.animate(old_trans ,300, 'linear', function() {
+            old_content_wrap.remove();
+          });
+          new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
+            new_content_wrap.detach().children().detach().appendTo(element);
+            if (replace_wh) {
+              element.css({height: old_height, width: old_width, overflow: old_overflow});
+            } else {
+              element.css({height: '', width: '', overflow: old_overflow});
+            }
+            if ($.isFunction(callback)) callback.call(element);
+          });
+          element.attr('data-view',view.data('id'));
 
-      self.framework('render',view,view_data,arq,function($html) {
-        old_content_wrap.animate(old_trans ,300, 'linear', function() {
-          old_content_wrap.remove();
+          // trigger the afterRender
+          view.data('afterRender')();
+
+          // trigger the afterRenderQueue
+          var cb = null;
+          while(cb = arq.shift()) { cb(); }
         });
-        new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
-          new_content_wrap.detach().children().detach().appendTo(element);
-          if (replace_wh) {
-            element.css({height: old_height, width: old_width, overflow: old_overflow});
-          } else {
-            element.css({height: '', width: '', overflow: old_overflow});
-          }
-          if ($.isFunction(callback)) callback.call(element);
-        });
-        element.attr('data-view',view.data('id'));
-
-        // trigger the afterRender
-        view.data('afterRender')();
-
-        // trigger the afterRenderQueue
-        var cb = null;
-        while(cb = arq.shift()) { cb(); }
       });
     },
 
-    _cleanUp: function(element) {
+    _cleanUp: function(element,callback) {
       var self = this;
 
       if (element.attr('data-view')) {
@@ -186,6 +186,7 @@
       element.find('[data-view]').each(function() {
         Fr.plugin.methods._cleanUp.call(self,$(this));
       });
+      if ($.isFunction(callback)) callback();
     },
 
     _cache: function(element,view) {
