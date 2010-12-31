@@ -170,7 +170,7 @@
                 element.css({height: '', width: '', overflow: old_overflow});
               }
               if ($.isFunction(callback)) callback.call(element);
-            },500);
+            },600);
             element.attr('data-view',view.data('id'));
 
             // trigger the afterRender
