@@ -135,27 +135,39 @@
           .css('width',width)
           .css('overflow','hidden');
 
-        element.wrapInner( '<div id="_fr_transition_" style="position: absolute; width: '+width+'px; height: '+height+'px;"></div>' );
+        element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+width+'px; height: '+height+'px;"></div>' );
         switch(transition) {
         case 'slide-left':
-          old_trans = {left: -width};
-          new_trans = {right: 0};
-          element.append('<div id="_fr_transition_new_conten_" style="position: absolute; right: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+          old_trans = {left: (-width).toString()+"px"};
+          new_trans = {right: "0"};
+          element.append('<div id="_fr_transition_new_conten_" style="-webkit-transition: right 0.5s ease-in-out; position: absolute; right: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
           break;
         case 'slide-right':
-          old_trans = {right: -width};
-          new_trans = {left: 0};
-          element.append('<div id="_fr_transition_new_conten_" style="position: relative; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+          old_trans = {right: (-width).toString()+"px"};
+          new_trans = {left: "0"};
+          element.append('<div id="_fr_transition_new_conten_" style="-webkit-transition: left 0.5s ease-in-out; position: relative; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
           break;
         }
         var old_content_wrap = element.find('#_fr_transition_');
         var new_content_wrap = element.find('#_fr_transition_new_conten_');
 
         self.framework('render',view,view_data,arq,function($html) {
-          old_content_wrap.animate(old_trans ,300, 'linear', function() {
+          setTimeout(function() {
+            for (var key in old_trans) {
+              console.log(key,old_trans[key]);
+              old_content_wrap.get(0).style[key] = old_trans[key];
+            }
+          },1);
+          setTimeout(function() {
             old_content_wrap.remove();
-          });
-          new_content_wrap.append($html).animate(new_trans,300,'linear',function() {
+          },500);
+          new_content_wrap.append($html);
+          setTimeout(function() {
+            for (var key in new_trans) {
+              new_content_wrap.get(0).style[key] = new_trans[key];
+            }
+          },1);
+          setTimeout(function() {
             new_content_wrap.detach().children().detach().appendTo(element);
             if (replace_wh) {
               element.css({height: old_height, width: old_width, overflow: old_overflow});
@@ -163,7 +175,7 @@
               element.css({height: '', width: '', overflow: old_overflow});
             }
             if ($.isFunction(callback)) callback.call(element);
-          });
+          },500);
           element.attr('data-view',view.data('id'));
 
           // trigger the afterRender
