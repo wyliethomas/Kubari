@@ -128,47 +128,44 @@
         var old_height = element.css('height');
         var old_width = element.css('width');
         var old_trans = null;
-        var new_trans = null;
 
         element
           .css('height',height)
           .css('width',width)
-          .css('overflow','hidden');
+          .css('overflow','hidden')
+          .css('-webkit-transition','all 0.5s ease-in-out');
 
-        element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+width+'px; height: '+height+'px;"></div>' );
+        var trans_wrap = null;
         switch(transition) {
         case 'slide-left':
+          element.wrapInner( '<div id="_fr_transition_old_conten_" style="position: absolute; left: 0; width: '+width+'px; height: '+height+'px;"></div>' );
+          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px;"></div>' );
+          trans_wrap = element.find('#_fr_transition_');
           old_trans = {left: (-width).toString()+"px"};
-          new_trans = {right: "0"};
-          element.append('<div id="_fr_transition_new_conten_" style="-webkit-transition: right 0.5s ease-in-out; position: absolute; right: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+          trans_wrap.append('<div id="_fr_transition_new_conten_" style="position: absolute; right: 0; width: '+width+'px; height: '+height+'px;""></div>');
           break;
         case 'slide-right':
+          element.wrapInner( '<div id="_fr_transition_old_conten_" style="position: absolute; right: 0; width: '+width+'px; height: '+height+'px;"></div>' );
+          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px;"></div>' );
+          trans_wrap = element.find('#_fr_transition_');
           old_trans = {right: (-width).toString()+"px"};
-          new_trans = {left: "0"};
-          element.append('<div id="_fr_transition_new_conten_" style="-webkit-transition: left 0.5s ease-in-out; position: relative; left: -'+width+'px; width: '+width+'px; height: '+height+'px;""></div>');
+          trans_wrap.append('<div id="_fr_transition_new_conten_" style="position: relative; left: 0; width: '+width+'px; height: '+height+'px;""></div>');
           break;
         }
-        var old_content_wrap = element.find('#_fr_transition_');
+        var old_content_wrap = element.find('#_fr_transition_old_conten_');
         var new_content_wrap = element.find('#_fr_transition_new_conten_');
 
         self.framework('render',view,view_data,arq,function($html) {
           setTimeout(function() {
             for (var key in old_trans) {
               console.log(key,old_trans[key]);
-              old_content_wrap.get(0).style[key] = old_trans[key];
+              trans_wrap.get(0).style[key] = old_trans[key];
             }
           },1);
-          setTimeout(function() {
-            old_content_wrap.remove();
-          },500);
           new_content_wrap.append($html);
           setTimeout(function() {
-            for (var key in new_trans) {
-              new_content_wrap.get(0).style[key] = new_trans[key];
-            }
-          },1);
-          setTimeout(function() {
             new_content_wrap.detach().children().detach().appendTo(element);
+            trans_wrap.remove();
             if (replace_wh) {
               element.css({height: old_height, width: old_width, overflow: old_overflow});
             } else {
