@@ -93,10 +93,14 @@
       }
 
       // trigger the cleanUp
-      Fr.plugin.methods._cleanUp.call(self,element,function() {
+      Fr.plugin.methods._cleanUp.call(self,element,function(delay) {
         self.framework('render',view,view_data,arq,function($html) {
-          element.empty().append( $html );
-          element.attr('data-view',view.data('id'));
+          var kids_to_remove = element.children();
+          setTimeout(function() {
+            kids_to_remove.remove();
+          },delay);
+          element.append( $html );
+          //element.attr('data-view',view.data('id'));
 
           // trigger the afterRender
           view.data('afterRender')();
@@ -174,19 +178,23 @@
 
     _cleanUp: function(element,callback) {
       var self = this;
+      var max_delay = 0;
 
-      if (element.attr('data-view')) {
+      if (element.is('span') && element.attr('data-view')) {
         self.framework('views',element.attr('data-view'),function(view) {
           if (view.data('controller')) {
-            view.data('controller').cleanUp.call(element);
+            var delay = view.data('controller').cleanUp.call(element);
+            if (delay > max_delay) max_delay = delay;
           }
           Fr.plugin.methods._cache(element,view);
         });
       }
-      element.find('[data-view]').each(function() {
-        Fr.plugin.methods._cleanUp.call(self,$(this));
+      element.find('span[data-view]').each(function() {
+        var delay = Fr.plugin.methods._cleanUp.call(self,$(this));
+        if (delay > max_delay) max_delay = delay;
       });
-      if ($.isFunction(callback)) callback();
+      if ($.isFunction(callback)) callback(max_delay);
+      return max_delay;
     },
 
     _cache: function(element,view) {
