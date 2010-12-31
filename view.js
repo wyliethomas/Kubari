@@ -132,8 +132,7 @@
         element
           .css('height',height)
           .css('width',width)
-          .css('overflow','hidden')
-          .css('-webkit-transition','all 0.5s ease-in-out');
+          .css('overflow','hidden');
 
         var trans_wrap = null;
         switch(transition) {
@@ -146,7 +145,7 @@
           break;
         case 'slide-right':
           element.wrapInner( '<div id="_fr_transition_old_conten_" style="position: absolute; right: 0; width: '+width+'px; height: '+height+'px;"></div>' );
-          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px; left: '+width+'px"></div>' );
+          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px; left: -'+width+'px"></div>' );
           trans_wrap = element.find('#_fr_transition_');
           old_trans = {webkitTransform: "translateX("+width.toString()+"px)"};
           trans_wrap.append('<div id="_fr_transition_new_conten_" style="position: relative; left: 0; width: '+width+'px; height: '+height+'px;""></div>');
