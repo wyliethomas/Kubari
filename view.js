@@ -156,13 +156,13 @@
         var new_content_wrap = element.find('#_fr_transition_new_conten_');
 
         self.framework('render',view,view_data,arq,function($html) {
+          new_content_wrap.append($html);
           setTimeout(function() {
             for (var key in old_trans) {
               console.log(key,old_trans[key]);
               trans_wrap.get(0).style[key] = old_trans[key];
             }
           },1);
-          new_content_wrap.append($html);
           setTimeout(function() {
             new_content_wrap.detach().children().detach().appendTo(element);
             trans_wrap.remove();
