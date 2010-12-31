@@ -141,14 +141,14 @@
           element.wrapInner( '<div id="_fr_transition_old_conten_" style="position: absolute; left: 0; width: '+width+'px; height: '+height+'px;"></div>' );
           element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px;"></div>' );
           trans_wrap = element.find('#_fr_transition_');
-          old_trans = {left: (-width).toString()+"px"};
+          old_trans = {webkitTransform: "translateX("+(-width).toString()+"px)"};
           trans_wrap.append('<div id="_fr_transition_new_conten_" style="position: absolute; right: 0; width: '+width+'px; height: '+height+'px;""></div>');
           break;
         case 'slide-right':
           element.wrapInner( '<div id="_fr_transition_old_conten_" style="position: absolute; right: 0; width: '+width+'px; height: '+height+'px;"></div>' );
-          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px;"></div>' );
+          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px; left: '+width+'px"></div>' );
           trans_wrap = element.find('#_fr_transition_');
-          old_trans = {right: (-width).toString()+"px"};
+          old_trans = {webkitTransform: "translateX("+width.toString()+"px)"};
           trans_wrap.append('<div id="_fr_transition_new_conten_" style="position: relative; left: 0; width: '+width+'px; height: '+height+'px;""></div>');
           break;
         }
@@ -159,28 +159,28 @@
           new_content_wrap.append($html);
           setTimeout(function() {
             for (var key in old_trans) {
-              console.log(key,old_trans[key]);
               trans_wrap.get(0).style[key] = old_trans[key];
             }
-          },1);
-          setTimeout(function() {
-            new_content_wrap.detach().children().detach().appendTo(element);
-            trans_wrap.remove();
-            if (replace_wh) {
-              element.css({height: old_height, width: old_width, overflow: old_overflow});
-            } else {
-              element.css({height: '', width: '', overflow: old_overflow});
-            }
-            if ($.isFunction(callback)) callback.call(element);
-          },500);
-          element.attr('data-view',view.data('id'));
 
-          // trigger the afterRender
-          view.data('afterRender')();
+            setTimeout(function() {
+              new_content_wrap.detach().children().detach().appendTo(element);
+              trans_wrap.remove();
+              if (replace_wh) {
+                element.css({height: old_height, width: old_width, overflow: old_overflow});
+              } else {
+                element.css({height: '', width: '', overflow: old_overflow});
+              }
+              if ($.isFunction(callback)) callback.call(element);
+            },500);
+            element.attr('data-view',view.data('id'));
 
-          // trigger the afterRenderQueue
-          var cb = null;
-          while(cb = arq.shift()) { cb(); }
+            // trigger the afterRender
+            view.data('afterRender')();
+
+            // trigger the afterRenderQueue
+            var cb = null;
+            while(cb = arq.shift()) { cb(); }
+          },10);
         });
       });
     },
