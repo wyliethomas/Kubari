@@ -305,5 +305,21 @@
       });
     }
   });
+  $.fn.prependViewTo = $.NewPlugin({
+    init: function(params) {
+      var self = this;
+      this.framework('views',params.view,function(view) {
+        self.framework('prependTo', view, params.target, params['args']);
+      });
+    }
+  });
+  $.fn.appendViewTo = $.NewPlugin({
+    init: function(params) {
+      var self = this;
+      this.framework('views',params.view,function(view) {
+        self.framework('appendTo', view, params.target, params['args']);
+      });
+    }
+  });
 
 })(jQuery);
