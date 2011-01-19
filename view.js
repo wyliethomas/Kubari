@@ -184,17 +184,23 @@
       var self = this;
 
       if (element.attr('data-view')) {
-        self.framework('views',element.attr('data-view'),function(view) {
-          if (view.data('controller')) {
-            view.data('controller').cleanUp.call(element);
-          }
-          Fr.plugin.methods._cache(element,view);
-        });
+        Fr.plugin.methods._cleanUpElem.call(self,element);
       }
       element.find('[data-view]').each(function() {
-        Fr.plugin.methods._cleanUp.call(self,$(this));
+        Fr.plugin.methods._cleanUpElem.call(self,$(this));
       });
-      if ($.isFunction(callback)) callback();
+      if ($.isFunction(callback)) {
+        callback();
+      }
+    },
+
+    _cleanUpElem: function(element) {
+      this.framework('views',element.attr('data-view'), function(view) {
+        if (view.data('controller')) {
+          view.data('controller').cleanUp.call(element);
+        }
+        Fr.plugin.methods._cache(element,view);
+      });
     },
 
     _cache: function(element,view) {
