@@ -57,8 +57,8 @@
      *    view.renderAsLayout();
      *  })
      */
-    renderAsLayout: function(view) {
-      this.framework('renderTo',view,'body');
+    renderAsLayout: function(view,options) {
+      this.framework('renderTo',view,'body',null,options);
     },
 
     appendTo: function(view, element, view_data) {
@@ -84,9 +84,11 @@
       });
     },
 
-    renderTo: function(view, element, view_data) {
+    renderTo: function(view, element, view_data, options) {
       var self = this;
       var arq = [];
+      var keepSound = false;
+      options = options || {};
 
       if (!(element instanceof jQuery)) {
         element = $(element,this);
@@ -95,7 +97,12 @@
       // trigger the cleanUp
       Fr.plugin.methods._cleanUp.call(self,element,function() {
         self.framework('render',view,view_data,arq,function($html) {
-          element.empty().append( $html );
+          if (options['keep']) {
+            $('body > :not('+options.keep+')').remove();
+            element.prepend( $html );
+          } else {
+            element.empty().append( $html );
+          }
           element.attr('data-view',view.data('id'));
 
           // trigger the afterRender

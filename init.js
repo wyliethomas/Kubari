@@ -14,7 +14,7 @@
 
       // render the entry point view
       this.framework('views',"layouts/application",function(view) {
-        Fr[app_name].framework('renderAsLayout',view);
+        Fr[app_name].framework('renderAsLayout',view,{keep: '.movieContainer'});
       });
     }
   });
