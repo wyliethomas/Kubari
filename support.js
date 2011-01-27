@@ -39,7 +39,7 @@ _extendBasePrototype_(String,'trim',function() {
 });
 
 _extendBasePrototype_(String,'toDate',function() {
-  return new Date(this);
+  return new Date(this.toString());
 });
 
 /*
