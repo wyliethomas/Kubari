@@ -176,9 +176,9 @@
           element.wrapInner( '<div id="_fr_transition_old_conten_" style="'+shared_styles+'; z-index: 10; -webkit-tranform: rotateY(0deg);"></div>' );
           element.wrapInner( '<div id="_fr_transition_" style="position: relative; -webkit-perspective: 600"></div>' );
           trans_wrap = element.find('#_fr_transition_');
-          trans_wrap.append('<div id="_fr_transition_new_conten_" style="'+shared_styles+'; z-index: 9; -webkit-transform: rotateY(-180deg);"></div>');
+          trans_wrap.append('<div id="_fr_transition_new_conten_" style="'+shared_styles+'; z-index: 9; -webkit-transform: rotateY(180deg);"></div>');
           trans = function(done) {
-            old_content_wrap.css({'webkitTransform':'rotateY(180deg)'});
+            old_content_wrap.css({'webkitTransform':'rotateY(-180deg)'});
             new_content_wrap.css({'zIndex':11,'webkitTransform':'rotateY(0deg)'});
             setTimeout(done,550);
           };
