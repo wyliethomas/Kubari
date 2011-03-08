@@ -115,6 +115,18 @@
       });
     },
 
+    removeFrom: function(element,callback) {
+      var self = this;
+      if (!(element instanceof jQuery)) {
+        element = $(element,this);
+      }
+      // trigger the cleanUp
+      Fr.plugin.methods._cleanUp.call(self,element,function() {
+        element.remove();
+        if ($.isFunction(callback)) callback.call(self);
+      });
+    },
+
     transitionTo: function(view, element, view_data, transition, callback,replace_wh) {
       var self = this;
       var arq = [];
