@@ -57,8 +57,8 @@
      *    view.renderAsLayout();
      *  })
      */
-    renderAsLayout: function(view,options) {
-      this.framework('renderTo',view,'body',null,options);
+    renderAsLayout: function(view,options,done) {
+      this.framework('renderTo',view,'body',null,options,done);
     },
 
     appendTo: function(view, element, view_data) {
@@ -84,7 +84,7 @@
       });
     },
 
-    renderTo: function(view, element, view_data, options) {
+    renderTo: function(view, element, view_data, options, done) {
       var self = this;
       var arq = [];
       var keepSound = false;
@@ -111,6 +111,8 @@
           // trigger the afterRenderQueue
           var cb = null;
           while(cb = arq.shift()) { cb(); }
+
+          if ($.isFunction(done)) done();
         });
       });
     },
@@ -287,6 +289,7 @@
       var run = function() {
         var view_functions = {
           yield: function(view_id, local_data) {
+            if (!view_id) return null;
             var sub_arq = [];
             local_data = local_data || {};
             // generate placeholder
