@@ -30,9 +30,12 @@ var route; // make a route var with global scope
       r[str] = obj = {regex: reg, handlers: [], params: []};
 
       // setup the param names
-      str.match(/:[a-z]+/gi).forEach(function(name) {
-        obj.params.push( name.replace(/:/,'') );
-      });
+      var matches = str.match(/:[a-z]+/gi);
+      if (matches) {
+        matches.forEach(function(name) {
+          obj.params.push( name.replace(/:/,'') );
+        });
+      }
 
       // add the bind handler function
       obj.bind = function(handler) {
@@ -49,7 +52,7 @@ var route; // make a route var with global scope
     for (i in r) {
       var obj = r[i];
       var results = str.match(obj.regex);
-      if (results.length > 0) {
+      if (results) {
         var params = {};
         results.shift();
 
