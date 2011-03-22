@@ -26,11 +26,11 @@ var route; // make a route var with global scope
     } else {
       // make a new route object
       // change :foo into ([^/]+)
-      var reg = new RegExp(str.replace(/:([a-z]+)/gi,'([^\]+)'));
+      var reg = new RegExp(str.replace(/:([a-z-_]+)/gi,'([^\]+)'));
       r[str] = obj = {regex: reg, handlers: [], params: []};
 
       // setup the param names
-      var matches = str.match(/:[a-z]+/gi);
+      var matches = str.match(/:[a-z-_]+/gi);
       if (matches) {
         matches.forEach(function(name) {
           obj.params.push( name.replace(/:/,'') );
