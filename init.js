@@ -16,7 +16,13 @@
       this.framework('views',"layouts/application",function(view) {
         Fr[app_name].framework('renderAsLayout',view,{keep: '.movieContainer'},function() {
           // hook-up the routes with history
-          if ($.history) $.history.init(function(hash) { route('/'+hash).run(); });
+          if ($.history) $.history.init(function(hash) {
+            if (hash == '') {
+              route.run('/root');
+            } else {
+              route.run('/'+hash);
+            }
+          },{unescape: ',/'});
         });
       });
     }
