@@ -26,7 +26,7 @@ var route; // make a route var with global scope
     } else {
       // make a new route object
       // change :foo into ([^/]+)
-      var reg = new RegExp(str.replace(/:([a-z-_]+)/gi,'([^\]+)'));
+      var reg = new RegExp(str.replace(/:([a-z-_]+)/gi,'([^/]+)'));
       r[str] = obj = {regex: reg, handlers: [], params: []};
 
       // setup the param names
@@ -57,7 +57,7 @@ var route; // make a route var with global scope
         results.shift();
 
         // collect the parameters
-        for (var i=0; i < results.length; i++) {
+        for (var i=0; i < obj.params.length; i++) {
           params[ obj.params[i] ] = results[i];
         }
 
