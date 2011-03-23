@@ -24,7 +24,7 @@
           // hook-up the routes with history
           if ($.history) $.history.init(function(hash) {
             //console.log(window.history.length,window.history[window.history.length-1]);
-            var forward;
+            var backward;
 
             if (window.history) { // we can try to detect back and foward chrome clicks if we have window.history
               var len = window.history.length;
@@ -32,18 +32,16 @@
               
               if (len == old_len) {
                 // did we flip direction
-                forward = (old_hash.len > old_hash2.len);
+                backward = (old_hash.len < old_hash2.len);
 
                 if (hash == old_hash2.hash) { // flip
-                  forward = !forward;
+                  backward = !backward;
                 }
 
-                if (forward) {
-                  console.log('forward button');
-                  new_old_hash = { hash: hash, len: (old_hash.len+1)};
-                } else {
-                  var back = true;
+                if (backward) {
                   new_old_hash = { hash: hash, len: (old_hash.len-1)};
+                } else {
+                  new_old_hash = { hash: hash, len: (old_hash.len+1)};
                 }
               }
               
@@ -54,9 +52,9 @@
             }
 
             if (hash == '') {
-              route.run('/root',{forward: forward});
+              route.run('/root',{backward: backward});
             } else {
-              route.run('/'+hash,{forward: forward});
+              route.run('/'+hash,{backward: backward});
             }
           },{unescape: ',/'});
 
