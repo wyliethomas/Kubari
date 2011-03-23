@@ -46,7 +46,7 @@ var route; // make a route var with global scope
     return obj; // return the route object
   };
 
-  route.run = function(str) {
+  route.run = function(str,args) {
     // test the str againts our routes
     var i;
     for (i in r) {
@@ -63,7 +63,7 @@ var route; // make a route var with global scope
 
         // call the handlers
         for (var i=0; i < obj.handlers.length; i++) {
-          obj.handlers[i].call(null,params);
+          obj.handlers[i].call(null,params,args);
         }
 
         break;

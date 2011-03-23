@@ -15,14 +15,51 @@
       // render the entry point view
       this.framework('views',"layouts/application",function(view) {
         Fr[app_name].framework('renderAsLayout',view,{keep: '.movieContainer'},function() {
+
+          // set history helping var for detecting back and forward browser chrome clicks
+          var old_len = 0;
+          var old_hash = { hash: null, len: old_len }
+          var old_hash2 = old_hash;
+
           // hook-up the routes with history
           if ($.history) $.history.init(function(hash) {
+            //console.log(window.history.length,window.history[window.history.length-1]);
+            var forward;
+
+            if (window.history) { // we can try to detect back and foward chrome clicks if we have window.history
+              var len = window.history.length;
+              var new_old_hash;
+              
+              if (len == old_len) {
+                // did we flip direction
+                forward = (old_hash.len > old_hash2.len);
+
+                if (hash == old_hash2.hash) { // flip
+                  forward = !forward;
+                }
+
+                if (forward) {
+                  console.log('forward button');
+                  new_old_hash = { hash: hash, len: (old_hash.len+1)};
+                } else {
+                  var back = true;
+                  new_old_hash = { hash: hash, len: (old_hash.len-1)};
+                }
+              }
+              
+              old_hash2 = old_hash;
+              old_hash = new_old_hash || { hash: hash, len: len };
+              old_len = len;
+              new_old_hash = null;
+            }
+
             if (hash == '') {
-              route.run('/root');
+              route.run('/root',{forward: forward});
             } else {
-              route.run('/'+hash);
+              route.run('/'+hash,{forward: forward});
             }
           },{unescape: ',/'});
+
         });
       });
     }
