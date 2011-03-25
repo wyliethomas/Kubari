@@ -1,6 +1,20 @@
-= clapp
+= Kubari
 
-Description goes here.
+Kubaru is a Japanese verb that means 'to distribute'. The original idea for this framework was to distribute the interface word-load of an application across all of the clients currently running the application.
+In effect, this is a jQuery based, MVC framework that pieces together the M V and C parts from other libraries where possible.
+
+== Architecture Basics
+
+The view (V) layer uses the EJS JavaScript Template Library to render the views. Views are broken up into their own folder structure with files ending in *.html.ejs . Eventually other view formats will be supported. The EJS Template Libaray is similar to the ERB template library common in Ruby On Rails applications.
+
+The controller (C) layer is fairly light-weight and gives you a way to attach JavaScript to before and after render events for your views. In server side MVC frameworks, the controllers (and even views) or often tied to the models in the applications. Because Kurbari is mean for the client side of web applications, it gravitates to the interface side of things, tying the controllers more closely with the views.
+
+The model (M) layer, right now at least, is mostly driven by a server side RESTful JSON api. There isn't much in the way of a model representation with functions on the client side other than the JSON object that gets returned from the server. Eventually, I hope to pair Kubari with an already existing JavaScript model layer such as JSActiveModel.
+
+
+== Some Ideas
+
+Because Kubari is built using jQuery and the jQuery plugin pattern, you could theoretically run a Kubari application inside of an element just like you can apply any jQuery plugin to a particular element. I don't know if this will ever be useful, but it is a cool idea.
 
 == Note on Patches/Pull Requests
  
@@ -14,4 +28,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 Doug Weber. See LICENSE for details.
+Copyright (c) 2010 Reisender Labs. See LICENSE for details.
