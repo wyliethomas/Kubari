@@ -60,6 +60,7 @@
 
         });
       });
+      return this;
     }
   });
   //$(function() { $(document).framework('init','app_name','app_root'); }); // example init call
