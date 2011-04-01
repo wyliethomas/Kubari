@@ -44,7 +44,7 @@
       });
       _views[key].data('afterRender', function() {
         if (_views[key].data('controller')) {
-          _views[key].data('controller').afterRender.call(_views[key]);
+          _views[key].data('controller').afterRender.apply(this,arguments);
         }
       });
       return _views[key];
@@ -66,8 +66,7 @@
       var arq = [];
 
       self.framework('render',view,view_data,arq,function($html) {
-        element.append( $html );
-        view.data('afterRender')();
+        view.data('afterRender').call( element.append($html), view_data );
         var cb = null;
         while(cb = arq.shift()) { cb(); }
       });
@@ -77,8 +76,7 @@
       var arq = [];
 
       self.framework('render',view,view_data,arq,function($html) {
-        element.prepend( $html );
-        view.data('afterRender')();
+        view.data('afterRender').call( element.prepend($html), view_data );
         var cb = null;
         while(cb = arq.shift()) { cb(); }
       });
@@ -97,16 +95,17 @@
       // trigger the cleanUp
       Fr.plugin.methods._cleanUp.call(self,element,function() {
         self.framework('render',view,view_data,arq,function($html) {
+          var new_elem;
           if (options['keep']) {
             $('body > :not('+options.keep+')').remove();
-            element.prepend( $html );
+            new_elem = element.prepend( $html );
           } else {
-            element.empty().append( $html );
+            new_elem = element.empty().append( $html );
           }
           element.attr('data-view',view.data('id'));
 
           // trigger the afterRender
-          view.data('afterRender')();
+          view.data('afterRender').call( new_elem, view_data );
 
           // trigger the afterRenderQueue
           var cb = null;
@@ -204,8 +203,9 @@
         self.framework('render',view,view_data,arq,function($html) {
           new_content_wrap.append($html);
           setTimeout(function() {
+            var new_elem;
             trans(function() {
-              new_content_wrap.detach().children().detach().appendTo(element);
+              new_elem = new_content_wrap.detach().children().detach().appendTo(element);
               trans_wrap.remove();
               if (replace_wh) {
                 element.css({height: old_height, width: old_width, overflow: old_overflow});
@@ -218,7 +218,7 @@
             element.attr('data-view',view.data('id'));
 
             // trigger the afterRender
-            view.data('afterRender')();
+            view.data('afterRender').call( new_elem, view_data );
 
             // trigger the afterRenderQueue
             var cb = null;
@@ -262,10 +262,11 @@
       var self = this;
       if (view.data('use_cache') && view.data('cache')) {
         view.data('cache').find('[data-view]').each(function() {
-          var view_id = $(this).attr('data-view');
+          var $that = $(this);
+          var view_id = $that.attr('data-view');
           arq.push(function() {
             self.framework('views',view_id,function(view2) {
-              view2.data('afterRender')();
+              view2.data('afterRender').call( $that );
             });
           });
         });
@@ -299,7 +300,7 @@
               var handle_view = function() {
                 self.framework('render',view2,local_data,sub_arq,function(partial) {
                   var tmp = $('#'+placeholder_id,self).replaceWith( partial );
-                  view2.data('afterRender')();
+                  view2.data('afterRender').call( partial, local_data );
 
                   // trigger the sub_arq
                   var cb = null;
