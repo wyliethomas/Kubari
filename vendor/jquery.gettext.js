@@ -58,13 +58,8 @@
 		load: function() {
 			$('link[rel=gettext]').each(function(){
 				var lang = this.lang;
-				$.get(this.href, function(data){
+				$.getJSON(this.href, function(messages){
 					$.gt.messages[lang] = $.gt.messages[lang] || {};
-					try {
-						var messages = eval('(' + data + ')');
-					} catch(e) {
-						return;
-					}
 
 					$.extend($.gt.messages[lang], messages);
 
