@@ -34,12 +34,23 @@ Function.prototype.inheritsFrom = function( parentClassOrObject ){
 /*
  *  String
  */
-_extendBasePrototype_(String,'trim',function() {
-  return this.replace(/^\s*(\S*(\s+\S+)*)\s*$/,"$1");
-});
-
 _extendBasePrototype_(String,'toDate',function() {
   return iso2date(this.toString());
+});
+_extendBasePrototype_(String,'trim',function(chars) { // trim \s or chars from front and back
+  if (chars)
+    return this.replace(new RegExp("^["+chars+"]+|["+chars+"]+$","g"),"");
+  return this.replace(/^\s+|\s+$/g,"");
+});
+_extendBasePrototype_(String,'ltrim',function(chars) {
+  if (chars)
+    return this.replace(new RegExp("^["+chars+"]+","g"),"");
+  return this.replace(/^\s+/,"");
+});
+_extendBasePrototype_(String,'rtrim',function(chars) {
+  if (chars)
+    return this.replace(new RegExp("["+chars+"]+$","g"),"");
+  return this.replace(/\s+$/,"");
 });
 
 /*
