@@ -52,7 +52,7 @@
             }
 
             if (hash == '') {
-              route.run('/root',{backward: backward});
+              route.run('/',{backward: backward});
             } else {
               route.run('/'+hash,{backward: backward});
             }
