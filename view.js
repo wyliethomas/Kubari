@@ -116,7 +116,7 @@
       });
     },
 
-    removeFrom: function(element,callback) {
+    remove: function(element,callback) {
       var self = this;
       if (!(element instanceof jQuery)) {
         element = $(element,this);
