@@ -65,6 +65,10 @@
       var self = this;
       var arq = [];
 
+      if (!(element instanceof jQuery)) {
+        element = $(element,this);
+      }
+
       self.framework('render',view,view_data,arq,function($html) {
         view.data('afterRender').call( element.append($html), view_data );
         var cb = null;
@@ -74,6 +78,10 @@
     prependTo: function(view, element, view_data) {
       var self = this;
       var arq = [];
+
+      if (!(element instanceof jQuery)) {
+        element = $(element,this);
+      }
 
       self.framework('render',view,view_data,arq,function($html) {
         view.data('afterRender').call( element.prepend($html), view_data );
