@@ -1,27 +1,36 @@
-EJS.Helpers.prototype.date_tag = function(name, value , html_options) {
-    if(! (value instanceof Date))
-		value = new Date()
-	
+EJS.Helpers.prototype.date_tag = function(name, value, options , html_options) {
+  // options = { years: [{value:'', text: ''}], months: [{value:'', text: ''}], days: [{value:'', text: ''}], }
+  options = options || {}; // init if null
+  var year, month, day;
+
+  if((value instanceof Date)) {
+    year = value.getFullYear();
+    month = value.getMonth();
+    day = value.getDate();
+  }
+
 	var month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-	var years = [], months = [], days =[];
-	var year = value.getFullYear();
-	var month = value.getMonth();
-	var day = value.getDate();
-	for(var y = year - 15; y < year+15 ; y++)
-	{
-		years.push({value: y, text: y})
-	}
-	for(var m = 0; m < 12; m++)
-	{
-		months.push({value: (m), text: month_names[m]})
-	}
-	for(var d = 0; d < 31; d++)
-	{
-		days.push({value: (d+1), text: (d+1)})
-	}
-	var year_select = this.select_tag(name+'[year]', year, years, {id: name+'[year]'} )
-	var month_select = this.select_tag(name+'[month]', month, months, {id: name+'[month]'})
-	var day_select = this.select_tag(name+'[day]', day, days, {id: name+'[day]'})
+  if (!options["years"]) {
+    options.years = [];
+    for(var y = year - 15; y < year+15 ; y++) {
+      options.years.push({value: y, text: y})
+    }
+  }
+  if (!options["months"]) {
+    options.months = [];
+    for(var m = 0; m < 12; m++) {
+      options.months.push({value: (m), text: month_names[m]})
+    }
+  }
+  if (!options["days"]) {
+    options.days = [];
+    for(var d = 0; d < 31; d++) {
+      options.days.push({value: (d+1), text: (d+1)})
+    }
+  }
+	var year_select = this.select_tag(name+'[year]', year, options.years, {id: name+'[year]'} )
+	var month_select = this.select_tag(name+'[month]', month, options.months, {id: name+'[month]'})
+	var day_select = this.select_tag(name+'[day]', day, options.days, {id: name+'[day]'})
 	
     return year_select+month_select+day_select;
 }
