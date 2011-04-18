@@ -17,6 +17,7 @@ var route; // make a route var with global scope
 
 // Make a scope for us to work in and not have to reference window.routes everytime.
 (function(r) {
+  var history = [];
 
   route = function(str) {
     var obj;
@@ -61,6 +62,8 @@ var route; // make a route var with global scope
           params[ obj.params[i] ] = results[i];
         }
 
+        updateHistory(str);
+
         // call the handlers
         for (var i=0; i < obj.handlers.length; i++) {
           obj.handlers[i].call(null,params,args);
@@ -70,6 +73,16 @@ var route; // make a route var with global scope
       }
     }
   };
+
+  route.history = function() {
+    return history;
+  };
+
+  // private
+  var updateHistory = function(item) {
+    history.unshift(item);
+    if (history.length > 10) history.pop();
+  }
 
 })(window.routes);
 
