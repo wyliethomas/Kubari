@@ -54,7 +54,7 @@
             if (hash == '') {
               route.run('/',{backward: backward});
             } else {
-              route.run('/'+hash,{backward: backward});
+              route.run('/'+hash.ltrim('/'),{backward: backward});
             }
           },{unescape: ',/'});
 
