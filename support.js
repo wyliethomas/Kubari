@@ -105,12 +105,12 @@ var time_in_words = function(timestamp) {
   var dH = Math.floor(d / (60 * 60 * 1000));
   var dN = Math.floor(d / (60 * 1000));
 
-  if (dY > 0)   { return dY === 1? "1 year ago"   : dY + " years ago"; }
-  if (dM > 0)   { return dM === 1? "1 month ago"  : dM + " months ago"; }
-  if (dD > 0)   { return dD === 1? "1 day ago"    : dD + " days ago"; }
-  if (dH > 0)   { return dH === 1? "1 hour ago"   : dH + " hours ago"; }
-  if (dN > 0)   { return dN === 1? "1 minute ago" : dN + " minutes ago"; }
-  return "less than a minute ago";
+  if (dY > 0)   { return dY === 1? _("1 year ago")   : dY + _(" years ago"); }
+  if (dM > 0)   { return dM === 1? _("1 month ago")  : dM + _(" months ago"); }
+  if (dD > 0)   { return dD === 1? _("1 day ago")    : dD + _(" days ago"); }
+  if (dH > 0)   { return dH === 1? _("1 hour ago")   : dH + _(" hours ago"); }
+  if (dN > 0)   { return dN === 1? _("1 minute ago") : dN + _(" minutes ago"); }
+  return _("less than a minute ago");
 };
 
 // from http://delete.me.uk/2005/03/iso8601.html
