@@ -163,24 +163,24 @@
         switch(transition) {
         case 'slide-left':
           element.wrapInner( '<div id="_fr_transition_old_conten_" style="position: absolute; left: 0; width: '+width+'px; height: '+height+'px;"></div>' );
-          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; -moz-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px;"></div>' );
+          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.3s ease-in-out; -moz-transition: all 0.3s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px;"></div>' );
           trans_wrap = element.find('#_fr_transition_');
           trans_wrap.append('<div id="_fr_transition_new_conten_" style="position: absolute; right: 0; width: '+width+'px; height: '+height+'px;""></div>');
           trans = function(done) {
             trans_wrap.css('webkitTransform',"translateX("+(-width).toString()+"px)");
             trans_wrap.css('mozTransform',"translateX("+(-width).toString()+"px)");
-            setTimeout(done,600);
+            setTimeout(done,350);
           };
           break;
         case 'slide-right':
           element.wrapInner( '<div id="_fr_transition_old_conten_" style="position: absolute; right: 0; width: '+width+'px; height: '+height+'px;"></div>' );
-          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.5s ease-in-out; -moz-transition: all 0.5s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px; left: -'+width+'px"></div>' );
+          element.wrapInner( '<div id="_fr_transition_" style="-webkit-transition: all 0.3s ease-in-out; -moz-transition: all 0.3s ease-in-out; position: absolute; width: '+(width*2)+'px; height: '+height+'px; left: -'+width+'px"></div>' );
           trans_wrap = element.find('#_fr_transition_');
           trans_wrap.append('<div id="_fr_transition_new_conten_" style="position: relative; left: 0; width: '+width+'px; height: '+height+'px;""></div>');
           trans = function(done) {
             trans_wrap.css('webkitTransform',"translateX("+width.toString()+"px)");
             trans_wrap.css('mozTransform',"translateX("+width.toString()+"px)");
-            setTimeout(done,600);
+            setTimeout(done,350);
           };
           break;
         case 'flip-left':
@@ -190,7 +190,7 @@
             'left: 0',
             'width: '+width+'px',
             'height: '+height+'px',
-            '-webkit-transition: all 0.5s linear',
+            '-webkit-transition: all 0.3s linear',
             '-webkit-transform-style: preserve-3d',
             '-webkit-backface-visibility: hidden'
           ].join(';');
