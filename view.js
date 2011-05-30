@@ -204,6 +204,27 @@
             setTimeout(done,550);
           };
           break;
+        case 'flip-right':
+          var shared_styles = [
+            'position: absolute',
+            'top: 0',
+            'left: 0',
+            'width: '+width+'px',
+            'height: '+height+'px',
+            '-webkit-transition: all 0.3s linear',
+            '-webkit-transform-style: preserve-3d',
+            '-webkit-backface-visibility: hidden'
+          ].join(';');
+          element.wrapInner( '<div id="_fr_transition_old_conten_" style="'+shared_styles+'; z-index: 10; -webkit-tranform: rotateY(0deg);"></div>' );
+          element.wrapInner( '<div id="_fr_transition_" style="position: relative; -webkit-perspective: 600"></div>' );
+          trans_wrap = element.find('#_fr_transition_');
+          trans_wrap.append('<div id="_fr_transition_new_conten_" style="'+shared_styles+'; z-index: 9; -webkit-transform: rotateY(-180deg);"></div>');
+          trans = function(done) {
+            old_content_wrap.css({'webkitTransform':'rotateY(180deg)'});
+            new_content_wrap.css({'zIndex':11,'webkitTransform':'rotateY(0deg)'});
+            setTimeout(done,550);
+          };
+          break;
         }
         var old_content_wrap = element.find('#_fr_transition_old_conten_');
         var new_content_wrap = element.find('#_fr_transition_new_conten_');
