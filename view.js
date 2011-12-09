@@ -158,6 +158,9 @@
           .css('width',width)
           .css('overflow','hidden');
 
+        //webkit fix for "blink" on transition
+        element.children().children().css('webkitTransform', 'translate3d(0,0,0)'); 
+
         var trans_wrap = null;
         var trans = $.noop;
         switch(transition) {
